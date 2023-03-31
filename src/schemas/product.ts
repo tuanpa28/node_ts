@@ -7,4 +7,6 @@ export const proSchema = Joi.object({
   image: Joi.string().required(),
   description: Joi.string().required(),
   categoryId: Joi.array(),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date(),
 });

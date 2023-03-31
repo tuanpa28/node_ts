@@ -5,5 +5,7 @@ interface IProduct {
   image: string;
   description: string;
   categoryId: ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export default IProduct;

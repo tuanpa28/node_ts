@@ -10,6 +10,8 @@ const userSchema = new Schema<IUser>(
       type: String,
       default: "member",
     },
+    createdAt: { type: Date },
+    updatedAt: { type: Date },
   },
   { timestamps: true, versionKey: false }
 );
