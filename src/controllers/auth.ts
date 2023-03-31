@@ -28,13 +28,8 @@ export const signup = async (req: Request, res: Response) => {
 
     const user = await User.create({ name, email, password: hashedPassword });
 
-    const accessToken = jwt.sign({ _id: user._id }, process.env.SECRET_KEY!, {
-      expiresIn: 60 * 60,
-    });
-
     return res.status(201).json({
       message: "Đăng ký thành công!",
-      accessToken,
       user: {
         _id: user._id,
         name: user.name,
@@ -77,7 +72,6 @@ export const signin = async (req: Request, res: Response) => {
     user.password = undefined!;
 
     res.status(200).json({
-      message: "Đăng nhập thành công!",
       user,
       accessToken,
     });

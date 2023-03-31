@@ -6,6 +6,5 @@ export const proSchema = Joi.object({
   price: Joi.number().required().min(0),
   image: Joi.string().required(),
   description: Joi.string().required(),
-  createdAt: Joi.date().default(() => new Date()),
-  updatedAt: Joi.date().default(() => new Date()),
+  categoryId: Joi.array(),
 });

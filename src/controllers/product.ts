@@ -5,7 +5,11 @@ import { Request, Response } from "express";
 // Lấy tất cả sản phẩm
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate({
+      path: "categoryId",
+      model: "Category",
+      select: "name",
+    });
 
     if (products.length === 0)
       return res.status(404).json({ message: "Không có sản phẩm nào!" });
@@ -22,7 +26,12 @@ export const getProducts = async (req: Request, res: Response) => {
 // Lấy sản phẩm theo id
 export const getProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate({
+      path: "categoryId",
+      model: "Category",
+      select: "name",
+      populate: { path: "productId", model: "Product", select: "name" },
+    });
 
     if (!product) return res.json({ message: "Không tìm thấy sản phẩm!" });
 
@@ -79,6 +88,9 @@ export const editProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
+
+    if (!product)
+      return res.status(400).json({ message: "Xóa sản phẩm thất bại!" });
 
     return res.json({ message: "Xóa sản phẩm thành công!", product });
   } catch (error) {
