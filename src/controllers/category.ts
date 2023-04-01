@@ -7,7 +7,6 @@ export const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find().populate({
       path: "productId",
-      model: "Product",
       select: "name",
     });
 
@@ -29,9 +28,8 @@ export const getCategory = async (req: Request, res: Response) => {
   try {
     const category = await Category.findById(req.params.id).populate({
       path: "productId",
-      model: "Product",
-      select: "name price",
-      populate: { path: "categoryId", model: "Category", select: "name price" },
+      select: "name",
+      populate: { path: "categoryId", model: "Category", select: "name" },
     });
 
     if (!category) {

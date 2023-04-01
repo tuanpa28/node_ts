@@ -1,4 +1,5 @@
 import Product from "../models/product";
+import Category from "../models/category";
 import { proSchema } from "../schemas/product";
 import { Request, Response } from "express";
 
@@ -7,7 +8,6 @@ export const getProducts = async (req: Request, res: Response) => {
   try {
     const products = await Product.find().populate({
       path: "categoryId",
-      model: "Category",
       select: "name",
     });
 
@@ -28,7 +28,6 @@ export const getProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id).populate({
       path: "categoryId",
-      model: "Category",
       select: "name",
       populate: { path: "productId", model: "Product", select: "name" },
     });
@@ -47,13 +46,28 @@ export const getProduct = async (req: Request, res: Response) => {
 // Thêm sản phẩm
 export const addProduct = async (req: Request, res: Response) => {
   try {
+    const { categoryId } = req.body;
+
     const { error } = proSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
       return res.status(400).json({ errors });
     }
 
-    const product = await Product.create(req.body);
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      console.log("Không tìm thấy category!");
+      return;
+    }
+    const product = new Product({
+      ...req.body,
+      categoryId: category._id,
+    });
+    await product.save();
+    if (Array.isArray(category.productId)) {
+      category.productId.push(product._id);
+      await category.save();
+    }
 
     if (!product) return res.json({ message: "Thêm sản phẩm thất bại!" });
 
