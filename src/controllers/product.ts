@@ -6,10 +6,27 @@ import { Request, Response } from "express";
 // Lấy tất cả sản phẩm
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find().populate({
-      path: "categoryId",
-      select: "name",
-    });
+    const {
+      _page = 1,
+      _limit = 10,
+      _sort = "createdAt",
+      _order = "asc",
+    } = req.query;
+
+    const myCustomLabels = {
+      docs: "data",
+    };
+
+    const options = {
+      page: _page,
+      limit: _limit,
+      sort: {
+        [_sort.toString()]: _order === "desc" ? -1 : 1,
+      },
+      customLabels: myCustomLabels,
+    };
+
+    const products = await Product.paginate({}, options);
 
     if (products.length === 0)
       return res.status(404).json({ message: "Không có sản phẩm nào!" });
@@ -29,7 +46,7 @@ export const getProduct = async (req: Request, res: Response) => {
     const product = await Product.findById(req.params.id).populate({
       path: "categoryId",
       select: "name",
-      populate: { path: "productId", model: "Product", select: "name" },
+      populate: { path: "productId", select: "name" },
     });
 
     if (!product) return res.json({ message: "Không tìm thấy sản phẩm!" });
@@ -46,28 +63,16 @@ export const getProduct = async (req: Request, res: Response) => {
 // Thêm sản phẩm
 export const addProduct = async (req: Request, res: Response) => {
   try {
-    const { categoryId } = req.body;
-
     const { error } = proSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
       return res.status(400).json({ errors });
     }
 
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      console.log("Không tìm thấy category!");
-      return;
-    }
-    const product = new Product({
-      ...req.body,
-      categoryId: category._id,
+    const product = await Product.create(req.body);
+    await Category.findByIdAndUpdate(product.categoryId, {
+      $addToSet: { productId: product._id },
     });
-    await product.save();
-    if (Array.isArray(category.productId)) {
-      category.productId.push(product._id);
-      await category.save();
-    }
 
     if (!product) return res.json({ message: "Thêm sản phẩm thất bại!" });
 

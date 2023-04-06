@@ -1,10 +1,9 @@
 import dotenv from "dotenv";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, RequestHandler } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/user";
 import IUser from "../interfaces/auth";
 dotenv.config();
-
 interface IRequestWithUser extends Request {
   user: IUser;
 }

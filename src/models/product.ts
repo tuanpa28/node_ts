@@ -1,5 +1,10 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model, Types, Model } from "mongoose";
 import IProduct from "../interfaces/product";
+import mongoosePaginate from "mongoose-paginate-v2";
+
+interface IProductModel extends Model<IProduct> {
+  paginate: any;
+}
 
 const Product = new Schema<IProduct>(
   {
@@ -14,4 +19,6 @@ const Product = new Schema<IProduct>(
   { versionKey: false, timestamps: true }
 );
 
-export default model<IProduct>("Product", Product);
+Product.plugin(mongoosePaginate);
+
+export default model<IProduct, IProductModel>("Product", Product);

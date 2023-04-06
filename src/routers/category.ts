@@ -6,6 +6,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/category";
+import { checkPermission } from "../middlewares/checkPermission";
 
 const router: Router = Router();
 
@@ -16,12 +17,12 @@ router.get("/categories", getCategories);
 router.get("/category/:id", getCategory);
 
 // Thêm danh mục
-router.post("/category", createCategory);
+router.post("/category", checkPermission, createCategory);
 
 // Sửa danh mục
-router.put("/category/:id", updateCategory);
+router.put("/category/:id", checkPermission, updateCategory);
 
 // Xóa danh mục
-router.delete("/category/:id", deleteCategory);
+router.delete("/category/:id", checkPermission, deleteCategory);
 
 export default router;
