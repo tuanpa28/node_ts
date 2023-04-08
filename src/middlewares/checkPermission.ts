@@ -24,27 +24,34 @@ export const checkPermission = async (
     // Lấy mã token
     const token = req.headers.authorization.split(" ")[1];
 
-    // Giải mã token lấy id
-    const { _id } = jwt.verify(token, process.env.SECRET_KEY!) as JwtPayload;
+    jwt.verify(token, process.env.SECRET_KEY!, async (error, payload) => {
+      if (error) {
+        if (error.name === "JsonWebTokenError") {
+          return res.status(401).json({ message: "Token không hợp lệ!" });
+        }
+        if (error.name === "TokenExpiredError") {
+          return res.status(401).json({ message: "Token đã hết hạn!" });
+        }
+      }
 
-    // Tìm user theo id
-    const user = (await User.findById(_id)) as IUser;
+      // Tìm user từ id
+      const { _id } = payload as JwtPayload;
+      const user = (await User.findById(_id)) as IUser;
+      if (!user) {
+        return res.status(401).json({
+          message: "Tài khoản không hợp lệ!",
+        });
+      }
+      // Kiểm tra xem user có phải admin hay không
+      if (user && user.role !== "admin") {
+        return res.status(401).json({
+          message: "Bạn không có quyền thực hiện chức năng này!",
+        });
+      }
 
-    if (!user) {
-      return res.status(401).json({
-        message: "Bạn phải đăng nhập để thực hiện hành động này!",
-      });
-    }
-
-    // Kiểm tra xem user có phải admin hay không
-    if (user && user.role !== "admin") {
-      return res.status(401).json({
-        message: "Bạn không có quyền để thực hiện chức năng này!",
-      });
-    }
-
-    req.user = user;
-    next();
+      req.user = user;
+      next();
+    });
   } catch (error) {
     return res.status(401).json({ message: error.message });
   }

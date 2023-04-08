@@ -91,13 +91,22 @@ export const editProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ errors });
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body);
 
     if (!product) return res.json({ message: "Sửa sản phẩm thất bại!" });
 
-    return res.json({ message: "Sửa sản phẩm thành công!", product });
+    await Category.findByIdAndUpdate(product?.categoryId, {
+      $pull: { productId: product?._id },
+    });
+    await Category.findByIdAndUpdate(req.body.categoryId, {
+      $addToSet: { productId: req.body._id },
+    });
+    const newProduct = await Product.findById(product?._id);
+
+    return res.json({
+      message: "Sửa sản phẩm thành công!",
+      product: newProduct,
+    });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }

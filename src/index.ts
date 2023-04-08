@@ -3,6 +3,7 @@ import productRouter from "./routers/product";
 import authRouter from "./routers/auth";
 import connectDB from "./config/database";
 import CategoryRouter from "./routers/category";
+import uploadRouter from "./routers/upload";
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -19,5 +20,6 @@ app.use(cors());
 app.use("/api", productRouter);
 app.use("/api", authRouter);
 app.use("/api", CategoryRouter);
+app.use("/api", uploadRouter);
 
 export const viteNodeApp = app;

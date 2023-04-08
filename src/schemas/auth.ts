@@ -1,7 +1,8 @@
 import Joi from "joi";
 
 export const signupSchema = Joi.object({
-  name: Joi.string().required().messages({
+  name: Joi.string().required().min(4).messages({
+    "string.min": "Name phải có ít nhất {#limit} ký tự!",
     "string.empty": "Name không được để trống!",
     "any.required": "Trường name là bắt buộc!",
   }),
