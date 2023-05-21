@@ -12,6 +12,16 @@ export const getProducts = async (req: Request, res: Response) => {
       _sort = "createdAt",
       _order = "asc",
     } = req.query;
+    const searchText = req.query._searchText as string;
+    const query = searchText
+      ? {
+          $text: {
+            $search: searchText,
+            $caseSensitive: false,
+            $diacriticSensitive: false,
+          },
+        }
+      : {};
 
     const myCustomLabels = {
       docs: "data",
@@ -26,7 +36,7 @@ export const getProducts = async (req: Request, res: Response) => {
       customLabels: myCustomLabels,
     };
 
-    const products = await Product.paginate({}, options);
+    const products = await Product.paginate(query, options);
 
     if (products.length === 0)
       return res.status(404).json({ message: "Không có sản phẩm nào!" });
@@ -119,6 +129,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     if (!product)
       return res.status(400).json({ message: "Xóa sản phẩm thất bại!" });
+
+    await Category.findByIdAndUpdate(product?.categoryId, {
+      $pull: { productId: product?._id },
+    });
 
     return res.json({ message: "Xóa sản phẩm thành công!", product });
   } catch (error) {

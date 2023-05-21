@@ -6,6 +6,15 @@ import dotenv from "dotenv";
 import { Request, Response } from "express";
 dotenv.config();
 
+// authGoogle
+export const authGoogle = async (req: Request, res: Response, next: any) => {
+  try {
+    console.log("auth Google", req.user);
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 // signup
 export const signup = async (req: Request, res: Response) => {
   try {
