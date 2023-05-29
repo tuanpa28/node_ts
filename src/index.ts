@@ -5,7 +5,7 @@ import connectDB from "./config/database";
 import CategoryRouter from "./routers/category";
 import uploadRouter from "./routers/upload";
 import dotenv from "dotenv";
-import cors from "cors";
+// import cors from "cors";
 
 const app = express();
 dotenv.config();
@@ -16,7 +16,7 @@ connectDB(process.env.MONGO_URL! || "");
 // Đăng ký một middleware giải mã dữ liệu json
 app.use(express.json());
 
-app.use(cors());
+// app.use(cors());
 app.use("/api", productRouter);
 app.use("/api", authRouter);
 app.use("/api", CategoryRouter);
