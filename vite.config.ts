@@ -5,12 +5,12 @@ dotenv.config();
 
 export default defineConfig({
   server: {
-    port: +(process.env.PORT ?? 3000),
+    port: +(process.env.PORT ?? 8080),
   },
   plugins: [
     ...VitePluginNode({
       adapter: "express",
-      appPath: "./index.ts",
+      appPath: "./src/index.ts",
       exportName: "viteNodeApp",
       tsCompiler: "esbuild",
       swcOptions: {},

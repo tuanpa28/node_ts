@@ -1,9 +1,9 @@
 import express from "express";
-import productRouter from "./src/routers/product";
-import authRouter from "./src/routers/auth";
-import connectDB from "./src/config/database";
-import CategoryRouter from "./src/routers/category";
-import uploadRouter from "./src/routers/upload";
+import productRouter from "./routers/product";
+import authRouter from "./routers/auth";
+import connectDB from "./config/database";
+import CategoryRouter from "./routers/category";
+import uploadRouter from "./routers/upload";
 import dotenv from "dotenv";
 import cors from "cors";
 
